@@ -1,0 +1,26 @@
+{
+  "type": "Compass Connections",
+  "version": {
+    "$numberInt": "1"
+  },
+  "connections": [
+    {
+      "id": "6d571b03-6924-4bd5-95c1-c9d63644ebbe",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1758045275923"
+        }
+      },
+      "favorite": {
+        "name": "demodb.tla6z3o.mongodb.net"
+      },
+      "savedConnectionType": "recent",
+      "connectionOptions": {
+        "connectionString": "mongodb+srv://adityathakur15_db_user:Aditya1501@demodb.tla6z3o.mongodb.net/",
+        "oidc": {
+          "serializedState": "eyJvaWRjUGx1Z2luU3RhdGVWZXJzaW9uIjoxLCJzdGF0ZSI6W119"
+        }
+      }
+    }
+  ]
+}
