@@ -9,7 +9,7 @@ console.log(`database uri value ${process.env.DATABASE_URI}`);
 connectDB()
 .then(()=>{
     app.on("error" ,(error)=>{
-        console.log("ERRORR: ",error)
+        console.log(" SERVER ERRORR: ",error)
         throw error
     })
     app.listen(process.env.PORT || 8000,() =>{
