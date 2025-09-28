@@ -4,8 +4,6 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-console.log(`database uri value ${process.env.DATABASE_URI}`);
-
 connectDB()
 .then(()=>{
     app.on("error" ,(error)=>{

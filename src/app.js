@@ -19,4 +19,10 @@ app.use(cookieParser()) // via this we can perform curd opertions on cookies
 // used in the backend and these are middelwares used by app.use(functions (via npm packages ))
 
 
+// ********************************************************
+// we will create routes here
+import userRouter from "./routes/user.route.js"
+app.use("/api/v1/users", userRouter) // this is the main route for the user
+// the url will look like this http://localhost:5000/api/v1/users/register
+// after the api/v1/user this will give the route to userrouter menthod which have a /register route
 export default app;

@@ -29,9 +29,10 @@
 // second one :
 
 const asyncHandler = (functionToBeWrapped) => (req,res,next) =>{
-    Promise.resolve(functionToBeWrapped(req,res,next))
+    return Promise.resolve(functionToBeWrapped(req,res,next))
            .catch((error) => next(error))
 }
+
 // this will return a promise which will resolve the function passed to it
 // if there is any error it will catch it and pass it to the next middleware
 // which will be the error handling middleware

@@ -5,3 +5,5 @@ class ApiResponse {
         this.data = data || null
     }
 }
+
+export default ApiResponse

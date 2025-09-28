@@ -54,7 +54,7 @@ userSchema.pre("save",async function(next){
     // this argument inside the function is for the middelwares which is a flag and tell to exceute the next middelware as soon this one get completed
 
     if(this.modified("password")){ // this will check if the password is modified or not if it is modified then only hash it otherwise not
-        this.password =  bcrypt.hash(this.passsword,10) //10 is the hash rounds for the hasing of the pssword just before storing in the databse
+        this.password =  await bcrypt.hash(this.passsword,10) //10 is the hash rounds for the hasing of the pssword just before storing in the databse
         next()
     }
 })
