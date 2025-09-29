@@ -1,6 +1,6 @@
 import mongoose,{Schema} from "mongoose";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 
 const userSchema = new Schema({
@@ -49,19 +49,20 @@ const userSchema = new Schema({
 },{timestamps:true}) // this will give us createdAt and updatedAt fields
 
 
-userSchema.pre("save",async function(next){
+userSchema.pre("save", async function(next){
     //this pre is a middleware this have many types like save ,update,delete etc we are going to use pre.save which means just before saving the data in the database do this thing which is in the middelware
     // this argument inside the function is for the middelwares which is a flag and tell to exceute the next middelware as soon this one get completed
 
-    if(this.modified("password")){ // this will check if the password is modified or not if it is modified then only hash it otherwise not
-        this.password =  await bcrypt.hash(this.passsword,10) //10 is the hash rounds for the hasing of the pssword just before storing in the databse
-        next()
-    }
-})
+    // if(this.isModified("password")){ // this will check if the password is modified or not if it is modified then only hash it otherwise not
+    //     this.password =  await bcrypt.hash(this.passsword,10) //10 is the hash rounds for the hasing of the pssword just before storing in the databse
+    //     next();
+    // }
     //or
-    // if(!this.isModified("password")) return next() // if the password is not modified then just return next middelware
-    // this.password =  bcrypt.hash(this.passsword,10) //10 is the hash rounds for the hasing of the pssword just before storing in the databse
-    // next()
+    if(!this.isModified("password")) return next() // if the password is not modified then just return next middelware
+    this.password = await bcrypt.hash(this.password, 10) //10 is the hash rounds for the hasing of the pssword just before storing in the databse
+    next()
+})
+    
 
 userSchema.methods.isPasswordCorrect = async function(password){
    return await bcrypt.compare(password,this.password) // this will compare the password which is given by the user and the password which is stored in the database

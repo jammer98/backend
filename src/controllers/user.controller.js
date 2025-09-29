@@ -1,7 +1,7 @@
 import asyncHandler from "./../utils/asyncHandler.js"
 import ApiErrors from "../utils/apiErrors.js";
-import user from "../models/user.models.js";
-import { uploadToCloudinary } from "../utils/cloudinary.js";
+import {user} from "../models/user.models.js";
+import uploadToCloudinary  from "../utils/cloudinary.js";
 import ApiResponse from "../utils/apiResponse.js";
 
 
@@ -19,21 +19,25 @@ const registerUser = asyncHandler(async (req, res, next) =>{
     // 11. if user created send success response to client
 
     const {username,fullname,email,password} = req.body;
-    console.log("username :",username )
+    console.log("👉 req.body:", req.body);
+    console.log("👉 req.files:", req.files);
+    console.log("*********************")
+
+    // console.log("username :",username )
 
     // 2. validate user details (!empty , email valid etc)
     if([username,fullname,email,password].some((field) => field?.trim() === "")){
         // this condition for every field mentioned in the array , some method will check is field is empty or not and if field is true then trim it if after trim its empty then return true
         throw new ApiErrors(400,"All fields are required");
     }
-    if(email && !email.include("@")){
+    if(email && !email.includes("@")){
         // this check if email is empty and if email is not empty then check for @ in email
         // email.include("@") this will check if email has @ or not and ! marks tells if email does not have @ then throw error
         throw new ApiErrors(400,"Please enter a valid email address");
     }
 
     // 3. check is user already exits via username and email
-    const userExist = user.findOne({
+    const userExist = await user.findOne({
         $or : [{username},{email}]
     })
 
@@ -45,6 +49,10 @@ const registerUser = asyncHandler(async (req, res, next) =>{
     // multer middleware will add the file to the request object
     const avatarLocalPath = req.files?.avatar[0]?.path; // this will give the path of the avatar which is stored in the local server via multer middleware
     const coverImageLocalPath = req.files?.coverImage[0]?.path;
+
+    console.log("👉 avatarLocalPath:", avatarLocalPath);
+    console.log("👉 coverImageLocalPath:", coverImageLocalPath);
+
 
     if(!avatarLocalPath){
         throw new ApiErrors(400,"Avatar is required");
@@ -63,7 +71,7 @@ const registerUser = asyncHandler(async (req, res, next) =>{
 
     // 7. create user in db
 
-    const user = await user.create({
+    const newuser = await user.create({
         username:username.toLowerCase(),
         fullname:fullname.toLowerCase(),
         email:email.toLowerCase(),
@@ -73,7 +81,14 @@ const registerUser = asyncHandler(async (req, res, next) =>{
     })
 
     // 8.check user created or not
-    const createdUser = await user.findById(user._id).Select("-password -refreshToken")
+    const createdUser = await user.findById(newuser._id).select("-password -refreshToken")
+
+    // this is the user model this with this model we have cteated a new instance of the user callled the newuser 
+    // model have access to many methods like findById , findOne , create etc
+    // but instance of the model have access to ismodified etc etc
+    
+
+
     // whenever a user is created in monogodb it will genrate a _id for that user is that unique id is there then
     // then store it to createdUser variable 
     // .Select("-password -refreshToken") this will exclude the password and refreshToken from the user object created in the database
