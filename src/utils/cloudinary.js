@@ -22,6 +22,7 @@ const uploadToCloudinary = async (filepath) =>{
             resource_type: "auto", // this will automatically detect the type of file(image,video etc)
         })
         console.log("cloudinary response",response.url);
+        fs.unlinkSync(filepath); // delete the file from the server after uploading to cloudinary
         return response;
     } catch (error) {
         fs.unlinkSync(filepath); // delete the file from the server if there is an error
