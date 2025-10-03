@@ -1,7 +1,7 @@
 import { Router } from "express";
-import registerUser from "../controllers/user.controller.js";
+import {registerUser ,loginUser,logoutUser} from "../controllers/user.controller.js";
 import { upload } from "../middlewares/Multer.middlewares.js";
-
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router = Router();
 
 // we will use multer middleware to upload the avatar
@@ -18,6 +18,11 @@ router.route("/register").post(upload.fields(
         }
     ])
     ,registerUser)
+
+router.route("/login").post(loginUser)
+
+// secured Routes
+router.route("/logout").post(verifyJWT , logoutUser)
 
 export default router;
 // we will create a route for user registration
