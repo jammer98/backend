@@ -68,7 +68,7 @@ userSchema.methods.isPasswordCorrect = async function(password){
    return await bcrypt.compare(password,this.password) // this will compare the password which is given by the user and the password which is stored in the database
 }
 
-userSchema.methods.genrateAccessToken = function(){
+userSchema.methods.generateAccessToken = function(){
     //jwt sign is a method which is used to genrate the token : a token is a string which is used to identify the user and to authenticate the user jwt sign will give a token and jwt verify will verify the token
     // is the token is valid then it is verified or else not verified
     return jwt.sign({
@@ -84,7 +84,7 @@ userSchema.methods.genrateAccessToken = function(){
     )
 }
 
-userSchema.methods.genrateRefreshToken = function(){
+userSchema.methods.generateRefreshToken = function(){
     //jwt sign is a method which is used to genrate the token : a token is a string which is used to identify the user and to authenticate the user jwt sign will give a token and jwt verify will verify the token
     // is the token is valid then it is verified or else not verified
     return jwt.sign({
