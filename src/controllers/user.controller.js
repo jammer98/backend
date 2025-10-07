@@ -299,6 +299,9 @@ const updateuserAvatar = asyncHandler(async(req,res) =>{
 
     const updatedAvatar = await user.findByIdAndUpdate(req.user?._id,{ $set : {avatar : avatarupdatedCloudinaryPath.url } },{new : true}).select("-password")
 
+
+    //  we have to delete the old avatar file because we can have only one avatar file 
+    // so have to make a utility of deleting the old avatar file and then update this file
     return res.status(200).json(new ApiResponse(200,updatedAvatar,"avatar updated successfully"))
 })
 
