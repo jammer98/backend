@@ -245,10 +245,93 @@ const refreshAccessToken = asyncHandler(async (req,res)=>{
 
 })
 
-export {registerUser,loginUser,logoutUser,refreshAccessToken};
+const changeCurrentPassword = asyncHandler(async (req,res) =>{
+    const {oldPassword,newPassword} = req.body
+
+    await user.findById(req.user?._id)
+    const isOldPasswordcorrect = await user.isPasswordCorrect(oldPassword)
+
+    if(isOldPasswordcorrect){
+        throw new ApiErrors(400,"incorrect old password:Please verify it again")
+
+    }
+
+    user.password = newPassword
+    await user.save({validateBeforeSave}) // this is mentioned in the usermodel.js pre(hook) and it will be automatically be hashed
 
 
+    return res.status(200).json(new ApiResponse(200,{},"password changed successfully"))
 
+})
+
+const getCurrentUser = asyncHandler(async(req,res)=>{
+    return res.status(200).json(200,req.user,"current user fetched successfully")
+})
+
+const updateAccountDetails = asyncHandler(async(req,res)=>{
+    const {fullname,email} = req.body
+
+    if(!fullname || !email){
+        throw new ApiErrors(400,"all fields are required");
+    }
+
+    const newuserAfterAccountDetailsUpdate = user.findByIdAndUpdate(req.user?._id,
+                                {
+                                    $set : { fullname:fullname , email:email }
+                                },
+                                {new : true } /* this returns the new object of the user which is saved)*/ 
+                            ).select("-password")
+        return res.status(200).json(new ApiResponse(200,newuserAfterAccountDetailsUpdate,"Account details updated successfully"))
+})
+
+const updateuserAvatar = asyncHandler(async(req,res) =>{
+    const UpdateAvatarLocalPath = req.file?.path // here because we are updating only the avatar we use req.file unlike the req.files in register user controller , there we had two files avatar and a coverImage
+
+    if(!UpdateAvatarLocalPath){
+        throw new ApiErrors(400,"avatar file is missing")
+    }
+
+    const avatarupdatedCloudinaryPath = await uploadToCloudinary(UpdateAvatarLocalPath)
+
+    if(!avatarupdatedCloudinaryPath.url){
+        throw new ApiErrors(500,"could not upload on cloudinary")
+    }
+
+    const updatedAvatar = await user.findByIdAndUpdate(req.user?._id,{ $set : {avatar : avatarupdatedCloudinaryPath.url } },{new : true}).select("-password")
+
+    return res.status(200).json(new ApiResponse(200,updatedAvatar,"avatar updated successfully"))
+})
+
+const updateuserCoverImage = asyncHandler(async(req,res) =>{
+    const UpdateCoverImageLocalPath = req.file?.path // here because we are updating only the avatar we use req.file unlike the req.files in register user controller , there we had two files avatar and a coverImage
+
+    if(!UpdateCoverImageLocalPath){
+        throw new ApiErrors(400,"avatar file is missing")
+    }
+
+    const coverimageupdatedCloudinaryPath = await uploadToCloudinary(UpdateCoverImageLocalPath)
+
+    if(!coverimageupdatedCloudinaryPath.url){
+        throw new ApiErrors(500,"could not upload on cloudinary")
+    }
+
+    const updatedcoverImage = await user.findByIdAndUpdate(req.user?._id,{ $set : {coverImage : coverimageupdatedCloudinaryPath.url } },{new : true}).select("-password")
+
+    return res.status(200).json(new ApiResponse(200,updatedcoverImage,"cover Image updated successfully"))
+})
+
+export { registerUser,
+    loginUser,
+    logoutUser,
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser,
+    updateAccountDetails,
+    updateuserAvatar,
+    updateuserCoverImage };
+
+
+ 
 
 
 
