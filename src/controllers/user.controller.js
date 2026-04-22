@@ -296,6 +296,7 @@ const updateuserAvatar = asyncHandler(async(req,res) =>{
     if(!avatarupdatedCloudinaryPath.url){
         throw new ApiErrors(500,"could not upload on cloudinary")
     }
+    
 
     const updatedAvatar = await user.findByIdAndUpdate(req.user?._id,{ $set : {avatar : avatarupdatedCloudinaryPath.url } },{new : true}).select("-password")
 
@@ -321,6 +322,54 @@ const updateuserCoverImage = asyncHandler(async(req,res) =>{
     const updatedcoverImage = await user.findByIdAndUpdate(req.user?._id,{ $set : {coverImage : coverimageupdatedCloudinaryPath.url } },{new : true}).select("-password")
 
     return res.status(200).json(new ApiResponse(200,updatedcoverImage,"cover Image updated successfully"))
+})
+
+const getUserChannelProfile = asyncHandler(async(req,res) =>{
+    const {username} = req.params // we will take username from the url 
+
+    if(!username){
+        throw new ApiErrors(400,"usrname is missing");
+    }
+
+    // now we will write aggregation pipelines 
+    // we can do - user.find({usename}) but well write the aggregation 
+
+    const cahnnel = await user.aggregate([
+        {
+            $match:{
+                username: username?.toLowerCase()
+            }
+        },
+        {
+            $lookup:{ // this is to get my subs
+                from:"subscriptions",// this is teh document we get from the model and this is converted into lowercase and into prural,
+                localField:"_id",
+                foreignField:"channel",
+                as: "subcribers"
+            }
+        },
+        {
+            $lookup:{ // this is to get the channels i have subed
+                from:"subscriptions",
+                localField:"_id",
+                foreignField:"subcriber",
+                as: "subcribedTo"
+            }
+        },
+        {
+            $addFields:{
+                subscribersCount: {
+                    $size : "$subcribers"
+                },
+                channelsSubscribedToCount:{
+                    $size: "$subcribedTo"
+                }
+            }
+        }
+    ])
+
+
+    
 })
 
 export { registerUser,

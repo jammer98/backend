@@ -28,7 +28,7 @@
 
 // second one :
 
-const asyncHandler = (functionToBeWrapped) => (req,res,next) =>{
+const asyncHandler = (functionToBeWrapped) => async(req,res,next) =>{
     return Promise.resolve(functionToBeWrapped(req,res,next))
            .catch((error) => next(error))
 }
